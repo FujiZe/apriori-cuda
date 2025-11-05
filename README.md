@@ -5,4 +5,6 @@ cuda Implementation of Apriori Algorithm
 
 2. run "nvcc apriori.cu -o [ filename ]" for no use of cuda
 
-2. then run "./[ filename ] [ min support (Decile) ] transactions_10k.txt output.txt" 
+3. then run "./[ filename ] [ min support (Decile) ] transactions_10k.txt output.txt" 
+
+4. คำตอบอยู่ใน output.exe
