@@ -28,6 +28,7 @@ long double round(long double value, int pos){
 
 __constant__ int c_item[ITEM_MAX];
 
+
 __device__ __forceinline__
 bool is_subset_row(const int* __restrict__ flat, int start, int len,
                    const int* __restrict__ item, int m)
@@ -35,17 +36,16 @@ bool is_subset_row(const int* __restrict__ flat, int start, int len,
     if (len < m) return false;
     int i = 0, j = 0;
     const int end = start + len;
+
     while ((start + i) < end && j < m) {
-#if __CUDA_ARCH__
-        int a = __ldg(&flat[start + i]);   
-#else
         int a = flat[start + i];
-#endif
         int b = item[j];
+
         if (a < b) ++i;
-        else if (a > b) return false;      
+        else if (a > b) return false;
         else { ++i; ++j; }
     }
+
     return j == m;
 }
 
@@ -57,12 +57,12 @@ void support_kernel(const int* __restrict__ flat,
                     int* __restrict__ gcount)
 {
     extern __shared__ int ssum[];
-    const int tid = blockIdx.x * blockDim.x + threadIdx.x;
+    const int thread = blockIdx.x * blockDim.x + threadIdx.x;
 
     int local = 0;
-    if (tid < num_trans) {
-        int start = offs[tid];
-        int len   = lens[tid];
+    if (thread < num_trans) {
+        int start = offs[thread];
+        int len   = lens[thread];
         local = is_subset_row(flat, start, len, c_item, m) ? 1 : 0;
     }
     ssum[threadIdx.x] = local;
